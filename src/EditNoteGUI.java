@@ -1,10 +1,18 @@
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Class creates GUI to provide an interface for the user to create, edit, and save files in a given subdirectory
+ * of app-data
+ */
 public class EditNoteGUI extends JFrame {
 
-    public EditNoteGUI() {
-        setTitle("Notes App");
+    private String folderName;
+    private String fileName;
+
+    public EditNoteGUI(String directoryPath) {
+        folderName = directoryPath;
+        setTitle("Notes App / " + folderName);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         JMenuBar menuBar = new JMenuBar();
@@ -18,7 +26,7 @@ public class EditNoteGUI extends JFrame {
         setJMenuBar(menuBar);
 
 
-        String[] columns = {"My Notes"};
+        String[] columns = {folderName};
         String[][] data = {{"Note 1"}, {"Note 2"}, {"Note 3"}};
         JTable table = new JTable(data, columns);
         JScrollPane tableScrollPane = new JScrollPane(table);
@@ -32,5 +40,12 @@ public class EditNoteGUI extends JFrame {
         add(splitPane);
 
         setSize(800, 600);
+        setVisible(true);
+    }
+
+    //for testing
+    //TODO remove
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new EditNoteGUI("test"));
     }
 }
