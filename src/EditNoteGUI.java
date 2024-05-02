@@ -108,11 +108,14 @@ public class EditNoteGUI extends JFrame {
     }
 
     private void displayFileContent(String fileName) {
-        String filePath = "app-data/" + folderName + "/" + fileName;
-        String content = directoryManager.getFileContent(filePath);
-        textArea.setText(content);
-        setTitle("Notes App / " + folderName + "/" + selectedFileName);
-
+        if (fileName.isEmpty()) {
+            textArea.setText("");
+        } else {
+            String filePath = "app-data/" + folderName + "/" + fileName;
+            String content = directoryManager.getFileContent(filePath);
+            textArea.setText(content);
+            setTitle("Notes App / " + folderName + "/ " + selectedFileName);
+        }
     }
 
     private void saveToFile(String fileName, String content) {

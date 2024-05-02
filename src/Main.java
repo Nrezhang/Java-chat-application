@@ -6,6 +6,8 @@ class Main {
         System.out.println("Notes app running...");
         // Makes UI feel more native
         UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        MainGUI maingui = new MainGUI();
+        SwingUtilities.invokeLater(() -> {
+            MainGUI maingui = new MainGUI();
+        });
     }
 }

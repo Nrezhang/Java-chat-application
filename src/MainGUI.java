@@ -85,25 +85,16 @@ public class MainGUI extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 DirectoryManager directoryManager = new DirectoryManager();
                 String directoryName = nameField.getText();
-                System.out.println(directoryManager.makeDirectory(directoryName));
-                openFolder();
-            }
-        });
-
-        nameField.setInputVerifier(new InputVerifier() {
-            @Override
-            public boolean verify(JComponent input) {
-                JTextField field = (JTextField) input;
-                String text = field.getText();
-                if (text.isEmpty()) {
-                    field.setToolTipText("folder name cannot be empty");
-                    return false;
+                if (directoryName.isEmpty()) {
+                    JOptionPane.showMessageDialog(submitBtn, "Folder name cannot be empty.");
+                } else if (!directoryName.matches("[a-zA-Z0-9]+")) {
+                    JOptionPane.showMessageDialog(submitBtn, "Folder name must be alphanumeric.");
+                } else if (directoryName.length() > 255) {
+                    JOptionPane.showMessageDialog(submitBtn, "Folder name cannot exceed 255 characters.");
+                } else {
+                    System.out.println(directoryManager.makeDirectory(directoryName));
+                    openFolder();
                 }
-                if (!text.matches("[a-zA-Z0-9]+")) {
-                    field.setToolTipText("folder name must be a-z, A-Z, 0-9");
-                    return false;
-                }
-                return true;
             }
         });
     }
