@@ -1,8 +1,9 @@
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
+import java.io.File;
 /**
  * Class creates GUI to provide an interface for the user to create, edit, and save files in a given subdirectory
  * of app-data
@@ -11,6 +12,8 @@ public class EditNoteGUI extends JFrame {
 
     private String folderName;
     private String fileName;
+    private File[] files;
+    private DefaultTableModel tableModel;
     private DirectoryManager directoryManager;
 
     public EditNoteGUI(String directoryPath) {
@@ -40,9 +43,9 @@ public class EditNoteGUI extends JFrame {
             }
         });
 
-        String[] columns = {folderName};
-        String[][] data = {{"Note 1"}, {"Note 2"}, {"Note 3"}};
-        JTable table = new JTable(data, columns);
+        tableModel = new DefaultTableModel(new Object[][]{}, new String[]{folderName});
+        setFiles();
+        JTable table = new JTable(tableModel);
         JScrollPane tableScrollPane = new JScrollPane(table);
 
         JTextArea textArea = new JTextArea();
@@ -57,13 +60,29 @@ public class EditNoteGUI extends JFrame {
         setVisible(true);
     }
 
+
+
+    private void setFiles(){
+        files = directoryManager.returnDirectoryContents(folderName);
+        String[][] data = new String[files.length][1];
+        for (int i = 0; i < files.length; i++) {
+            data[i][0] = files[i].getName(); // Extract file name from File object
+        }
+        if (tableModel != null) {
+            tableModel.setDataVector(data, new String[]{folderName});
+        }
+    }
+    
     //for testing
     private void createNewFile(){
         String fileName = JOptionPane.showInputDialog("Enter file name:");
         if (fileName != null && !fileName.isEmpty()) {
             directoryManager.makeNewFile(folderName, fileName);
+            setFiles();
         }
     }
+
+    
     //TODO remove
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new EditNoteGUI("test"));

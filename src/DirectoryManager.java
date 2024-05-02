@@ -25,9 +25,8 @@ public class DirectoryManager {
     }
 
     public File[] returnDirectoryContents(String folderName) {
-        path = "app-data" + folderName;
+        path = "app-data/" + folderName;
         File directory = new File(path);
-
         File[] files = directory.listFiles(new FileFilter() {
             @Override
             public boolean accept(File file) {
@@ -55,7 +54,6 @@ public class DirectoryManager {
             System.err.println("Error creating file: " + e.getMessage());
             e.printStackTrace();
         }
-
         return newFile;
         
     }
