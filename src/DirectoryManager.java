@@ -1,4 +1,5 @@
 import java.io.*;
+import java.util.Objects;
 
 /**
  * Class responsible for all directory/file management tasks that
@@ -10,7 +11,6 @@ public class DirectoryManager {
 
     public DirectoryManager() {}
 
-    //This path notation works on windows but not sure if it works on macos/linux
     public File[] returnDirectories() {
         path = "app-data";
         File directory = new File(path);
@@ -25,7 +25,7 @@ public class DirectoryManager {
     }
 
     public File[] returnDirectoryContents(String folderName) {
-        path = "app-data" + folderName;
+        path = "app-data/" + folderName;
         File directory = new File(path);
 
         File[] files = directory.listFiles(new FileFilter() {
@@ -37,13 +37,24 @@ public class DirectoryManager {
         return (files != null) ? files : new File[0];
     }
 
-    public File makeDirectory(String name) {
-        path = "app-data" + name;
-        return new File(path);
+    public String makeDirectory(String name) {
+        path = "app-data/" + name;
+        File newDirectory = new File(path);
+        if (!newDirectory.exists()) {
+            boolean created = newDirectory.mkdir();
+            if (created) {
+                return "Folder created successfully.";
+            } else {
+                return "Failed to create folder.";
+            }
+        } else {
+            return "Folder already exists.";
+        }
     }
 
     public File makeNewFile(String folderName, String fileName) {
         path = "app-data/" + folderName + "/" + fileName;
+<<<<<<< Updated upstream
         File newFile = new File(path);
         try {
             if (newFile.createNewFile()) {
@@ -58,6 +69,20 @@ public class DirectoryManager {
 
         return newFile;
         
+=======
+        return new File(path);
+>>>>>>> Stashed changes
+    }
+
+    public boolean deleteDirectory(String name) {
+        path = "app-data/" + name;
+        File directory = new File(path);
+        if (directory.listFiles() != null) {
+            for (File f : Objects.requireNonNull(directory.listFiles())) {
+                f.delete();
+            }
+        }
+        return directory.delete();
     }
 
     //TODO

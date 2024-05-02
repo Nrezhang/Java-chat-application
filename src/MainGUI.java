@@ -12,8 +12,11 @@ public class MainGUI extends JFrame {
     private JButton newFolderBtn;
     private JButton backBtn;
     private JButton selectBtn;
+    private JButton deleteBtn;
+    private JButton submitBtn;
     private ImageIcon imageIcon;
     private JLabel subtitle;
+    private JTextField nameField;
     // Component to display existing folders
     private JList<File> directoryList;
     // Component to map list to Files
@@ -21,7 +24,7 @@ public class MainGUI extends JFrame {
 
     public MainGUI () {
         this.setSize(500, 500);
-        this.setTitle("Notes App");
+        this.setTitle("Notes");
         this.setLayout(new BorderLayout());
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -29,6 +32,9 @@ public class MainGUI extends JFrame {
         newFolderBtn = new JButton("New Folder");
         backBtn = new JButton("←");
         selectBtn = new JButton("Select Folder");
+        deleteBtn = new JButton("Delete Folder");
+        submitBtn = new JButton("Create Folder");
+        nameField = new JTextField();
         imageIcon = new ImageIcon("notes-logo.png");
         subtitle = new JLabel("", SwingConstants.CENTER);
         subtitle.setFont(new Font("Sans Serif", Font.BOLD, 20));
@@ -39,11 +45,69 @@ public class MainGUI extends JFrame {
         btnPanel = new JPanel(new FlowLayout());
         mainPanel.setLayout(new BorderLayout());
         add(mainPanel);
-        selectionScreen();
+        this.selectionScreen();
 
         this.setLocationRelativeTo(null);
         this.setVisible(true);
         this.setResizable(false);
+        this.initializeActionListeners();
+    }
+
+    /**
+     * Initializes ActionListeners used in MainGUI in a single, atomic function
+     * to avoid adding duplicate ActionListeners
+     */
+    private void initializeActionListeners() {
+        openFolderBtn.addActionListener(e -> openFolder());
+        newFolderBtn.addActionListener(e -> newFolder());
+        backBtn.addActionListener(e -> selectionScreen());
+
+        selectBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                File selectedDirectory = directoryList.getSelectedValue();
+                EditNoteGUI editNoteGUI = new EditNoteGUI(selectedDirectory.getName());
+            }
+        });
+
+        deleteBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int selectedIndex = directoryList.getSelectedIndex();
+                if (selectedIndex != - 1) {
+                    File selectedDirectory = directoryList.getSelectedValue();
+                    listModel.remove(selectedIndex);
+                    DirectoryManager directoryManager = new DirectoryManager();
+                    directoryManager.deleteDirectory(selectedDirectory.getName());
+                }
+            }
+        });
+
+        submitBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                DirectoryManager directoryManager = new DirectoryManager();
+                String directoryName = nameField.getText();
+                System.out.println(directoryManager.makeDirectory(directoryName));
+            }
+        });
+
+        nameField.setInputVerifier(new InputVerifier() {
+            @Override
+            public boolean verify(JComponent input) {
+                JTextField field = (JTextField) input;
+                String text = field.getText();
+                if (text.isEmpty()) {
+                    field.setToolTipText("folder name cannot be empty");
+                    return false;
+                }
+                if (!text.matches("[a-zA-Z0-9]+")) {
+                    field.setToolTipText("folder name must be a-z, A-Z, 0-9");
+                    return false;
+                }
+                return true;
+            }
+        });
     }
 
     /**
@@ -53,21 +117,7 @@ public class MainGUI extends JFrame {
     private void selectionScreen() {
         mainPanel.removeAll();
         btnPanel.removeAll();
-        subtitle.setText("Welcome to notes app");
-
-        openFolderBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                openFolder();
-            }
-        });
-
-        newFolderBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                newFolder();
-            }
-        });
+        subtitle.setText("Welcome to Notes");
 
         btnPanel.add(openFolderBtn);
         btnPanel.add(newFolderBtn);
@@ -86,7 +136,7 @@ public class MainGUI extends JFrame {
     private void openFolder() {
         mainPanel.removeAll();
         btnPanel.removeAll();
-        subtitle.setText("Open a folder");
+        subtitle.setText("Open folders");
 
         listModel = new DefaultListModel<>();
         directoryList = new JList<>(listModel);
@@ -99,22 +149,8 @@ public class MainGUI extends JFrame {
             listModel.addElement(directory);
         }
 
-        selectBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                File selectedDirectory = directoryList.getSelectedValue();
-                EditNoteGUI editNoteGUI = new EditNoteGUI(selectedDirectory.getName());
-            }
-        });
-
-        backBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                selectionScreen();
-            }
-        });
-
         btnPanel.add(backBtn);
+        btnPanel.add(deleteBtn);
         btnPanel.add(selectBtn);
         mainPanel.add(new JScrollPane(directoryList), BorderLayout.CENTER);
         mainPanel.add(btnPanel, BorderLayout.SOUTH);
@@ -129,6 +165,21 @@ public class MainGUI extends JFrame {
      */
     private void newFolder() {
         //TODO add components to mainPanel for newFolder UI
-        System.out.println("new folder");
+        mainPanel.removeAll();
+        btnPanel.removeAll();
+
+        subtitle.setText("Create new folder");
+        submitBtn.setVerifyInputWhenFocusTarget(true);
+        nameField.setColumns(20);
+
+
+        btnPanel.add(backBtn);
+        btnPanel.add(nameField);
+        btnPanel.add(submitBtn);
+        mainPanel.add(subtitle, BorderLayout.NORTH);
+        mainPanel.add(btnPanel, BorderLayout.CENTER);
+
+        mainPanel.revalidate();
+        mainPanel.repaint();
     }
 }
