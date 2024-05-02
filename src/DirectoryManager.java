@@ -114,4 +114,27 @@ public class DirectoryManager {
             return false;
         }
     }
+
+
+    public boolean renameDirectory(String parentFolder, String oldName, String newName) {
+        String oldPath = "app-data/" + parentFolder + "/" + oldName;
+        String newPath = "app-data/" + parentFolder + "/" + newName;
+        File oldDirectory = new File(oldPath);
+        File newDirectory = new File(newPath);
+        if (oldDirectory.exists() && !newDirectory.exists()) {
+            return oldDirectory.renameTo(newDirectory);
+        }
+        return false;
+    }
+    
+    public boolean renameFile(String folderName, String oldName, String newName) {
+        String oldPath = "app-data/" + folderName + "/" + oldName;
+        String newPath = "app-data/" + folderName + "/" + newName;
+        File oldFile = new File(oldPath);
+        File newFile = new File(newPath);
+        if (oldFile.exists() && !newFile.exists()) {
+            return oldFile.renameTo(newFile);
+        }
+        return false;
+    }
 }
