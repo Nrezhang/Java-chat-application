@@ -18,9 +18,9 @@ public class MainGUI extends JFrame {
     private JLabel subtitle;
     private JTextField nameField;
     // Component to display existing folders
-    private JList<File> directoryList;
+    private JList<String> directoryList;
     // Component to map list to Files
-    private DefaultListModel<File> listModel;
+    private DefaultListModel<String> listModel;
 
     public MainGUI () {
         this.setSize(500, 500);
@@ -65,8 +65,8 @@ public class MainGUI extends JFrame {
         selectBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                File selectedDirectory = directoryList.getSelectedValue();
-                EditNoteGUI editNoteGUI = new EditNoteGUI(selectedDirectory.getName());
+                String selectedDirectory = directoryList.getSelectedValue();
+                EditNoteGUI editNoteGUI = new EditNoteGUI(selectedDirectory);
             }
         });
 
@@ -75,10 +75,10 @@ public class MainGUI extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 int selectedIndex = directoryList.getSelectedIndex();
                 if (selectedIndex != - 1) {
-                    File selectedDirectory = directoryList.getSelectedValue();
+                    String selectedDirectory = directoryList.getSelectedValue();
                     listModel.remove(selectedIndex);
                     DirectoryManager directoryManager = new DirectoryManager();
-                    directoryManager.deleteDirectory(selectedDirectory.getName());
+                    directoryManager.deleteDirectory(selectedDirectory);
                 }
             }
         });
@@ -146,7 +146,8 @@ public class MainGUI extends JFrame {
         File[] directories = directoryManager.returnDirectories();
 
         for (File directory : directories) {
-            listModel.addElement(directory);
+            String folderName = directory.getName().replace("app-data/", "");
+            listModel.addElement(folderName);
         }
 
         btnPanel.add(backBtn);
