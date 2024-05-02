@@ -67,6 +67,7 @@ public class DirectoryManager {
         return newFile;
     }
 
+
     public boolean deleteDirectory(String name) {
         path = "app-data/" + name;
         File directory = new File(path);
@@ -76,6 +77,19 @@ public class DirectoryManager {
             }
         }
         return directory.delete();
+    }
+
+    public boolean deleteFile(String folderName, String fileName) {
+        String filePath = "app-data/" + folderName + "/" + fileName;
+        File fileToDelete = new File(filePath);
+        try{
+            fileToDelete.delete();
+            return true;
+        }
+        catch(SecurityException e){
+            e.printStackTrace();
+            return false;
+        }
     }
 
     public String getFileContent(String filename) {
