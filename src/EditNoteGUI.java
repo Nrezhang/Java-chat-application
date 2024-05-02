@@ -4,6 +4,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileNotFoundException;
+
 /**
  * Class creates GUI to provide an interface for the user to create, edit, and save files in a given subdirectory
  * of app-data
@@ -14,6 +16,7 @@ public class EditNoteGUI extends JFrame {
     private String fileName;
     private File[] files;
     private JTextArea textArea;
+    private JTable table;
     private DefaultTableModel tableModel;
     private DirectoryManager directoryManager;
     private String selectedFileName;
@@ -31,6 +34,7 @@ public class EditNoteGUI extends JFrame {
         JMenuItem exitItem = new JMenuItem("Exit");
         JMenuItem addItem = new JMenuItem("New");
         JMenuItem deleteItem = new JMenuItem("Delete");
+        JMenuItem renameItem = new JMenuItem("Rename");
 
         fileMenu.add(saveItem);
         fileMenu.addSeparator();
@@ -39,6 +43,8 @@ public class EditNoteGUI extends JFrame {
         fileMenu.add(addItem);
         fileMenu.addSeparator();
         fileMenu.add(exitItem);
+        fileMenu.addSeparator();
+        fileMenu.add(renameItem);
         menuBar.add(fileMenu);
         setJMenuBar(menuBar);
 
@@ -48,6 +54,7 @@ public class EditNoteGUI extends JFrame {
                 createNewFile();
             }
         });
+
         deleteItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -66,23 +73,44 @@ public class EditNoteGUI extends JFrame {
                 }
             }
         });
+
         exitItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e){
                 dispose();
             }
         });
+
         saveItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                saveToFile(selectedFileName ,textArea.getText());
+                saveToFile(selectedFileName, textArea.getText());
+            }
+        });
+
+        renameItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                saveToFile(selectedFileName, textArea.getText());
+                String newFileName = JOptionPane.showInputDialog(renameItem, "New name for " + selectedFileName,
+                        "Rename File", JOptionPane.QUESTION_MESSAGE);
+                changeFileName(selectedFileName, newFileName);
+                selectedFileName = newFileName;
+                displayFileContent(selectedFileName);
+                setFiles();
+                setTitle("Notes / " + folderName + " / " + selectedFileName);
             }
         });
         
 
-        tableModel = new DefaultTableModel(new Object[][]{}, new String[]{folderName});
+        tableModel = new DefaultTableModel(new Object[][]{}, new String[]{folderName}) {
+            @Override
+            public boolean isCellEditable(int row, int column) { //makes cells not editable, force to use rename method
+                return false;
+            }
+        };
         setFiles();
-        JTable table = new JTable(tableModel);
+        table = new JTable(tableModel);
         JScrollPane tableScrollPane = new JScrollPane(table);
 
 
@@ -114,7 +142,7 @@ public class EditNoteGUI extends JFrame {
             String filePath = "app-data/" + folderName + "/" + fileName;
             String content = directoryManager.getFileContent(filePath);
             textArea.setText(content);
-            setTitle("Notes App / " + folderName + "/ " + selectedFileName);
+            setTitle("Notes App / " + folderName + " / " + selectedFileName);
         }
     }
 
@@ -123,8 +151,12 @@ public class EditNoteGUI extends JFrame {
         directoryManager.setFileContent(filePath, content);
     }
 
+    private void changeFileName(String oldName, String newName) {
+        directoryManager.renameFile(folderName, oldName, newName);
+    }
 
-    private void setFiles(){
+
+    private void setFiles() {
         files = directoryManager.returnDirectoryContents(folderName);
         String[][] data = new String[files.length][1];
         for (int i = 0; i < files.length; i++) {
@@ -143,11 +175,5 @@ public class EditNoteGUI extends JFrame {
             selectedFileName = fileName;
             displayFileContent(selectedFileName);
         }
-    }
-
-    
-    //TODO remove
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new EditNoteGUI("test"));
     }
 }

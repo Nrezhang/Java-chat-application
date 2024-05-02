@@ -132,11 +132,18 @@ public class MainGUI extends JFrame {
     }
 
     /**
+     * Renames a folder to the name that has been typed in place of the
+     * existing folder name in the JTable
+     */
+    private void renameFolder() {
+        //TODO
+    }
+
+    /**
      * Populates JPanel mainPanel with components and layout to allow user
      * to create a new folder with a new name under app-data.
      */
     private void newFolder() {
-        //TODO add components to mainPanel for newFolder UI
         mainPanel.removeAll();
         btnPanel.removeAll();
 
