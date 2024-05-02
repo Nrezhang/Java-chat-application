@@ -8,7 +8,6 @@ public class MainGUI extends JFrame {
 
     private JPanel mainPanel;
     private JPanel btnPanel;
-    private JButton openFolderBtn;
     private JButton newFolderBtn;
     private JButton backBtn;
     private JButton selectBtn;
@@ -28,7 +27,6 @@ public class MainGUI extends JFrame {
         this.setLayout(new BorderLayout());
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        openFolderBtn = new JButton("Open Folder");
         newFolderBtn = new JButton("New Folder");
         backBtn = new JButton("←");
         selectBtn = new JButton("Select Folder");
@@ -45,7 +43,7 @@ public class MainGUI extends JFrame {
         btnPanel = new JPanel(new FlowLayout());
         mainPanel.setLayout(new BorderLayout());
         add(mainPanel);
-        this.selectionScreen();
+        this.openFolder();
 
         this.setLocationRelativeTo(null);
         this.setVisible(true);
@@ -58,9 +56,8 @@ public class MainGUI extends JFrame {
      * to avoid adding duplicate ActionListeners
      */
     private void initializeActionListeners() {
-        openFolderBtn.addActionListener(e -> openFolder());
         newFolderBtn.addActionListener(e -> newFolder());
-        backBtn.addActionListener(e -> selectionScreen());
+        backBtn.addActionListener(e -> openFolder());
 
         selectBtn.addActionListener(new ActionListener() {
             @Override
@@ -89,6 +86,7 @@ public class MainGUI extends JFrame {
                 DirectoryManager directoryManager = new DirectoryManager();
                 String directoryName = nameField.getText();
                 System.out.println(directoryManager.makeDirectory(directoryName));
+                openFolder();
             }
         });
 
@@ -110,24 +108,6 @@ public class MainGUI extends JFrame {
         });
     }
 
-    /**
-     * Populates JPanel mainPanel with components and layout for selection
-     * between create new folder and open folder.
-     */
-    private void selectionScreen() {
-        mainPanel.removeAll();
-        btnPanel.removeAll();
-        subtitle.setText("Welcome to Notes");
-
-        btnPanel.add(openFolderBtn);
-        btnPanel.add(newFolderBtn);
-
-        mainPanel.add(subtitle, BorderLayout.NORTH);
-        mainPanel.add(btnPanel, BorderLayout.CENTER);
-
-        mainPanel.revalidate();
-        mainPanel.repaint();
-    }
 
     /**
      * Populates JPanel mainPanel with components and layout to allow user
@@ -150,8 +130,8 @@ public class MainGUI extends JFrame {
             listModel.addElement(folderName);
         }
 
-        btnPanel.add(backBtn);
         btnPanel.add(deleteBtn);
+        btnPanel.add(newFolderBtn);
         btnPanel.add(selectBtn);
         mainPanel.add(new JScrollPane(directoryList), BorderLayout.CENTER);
         mainPanel.add(btnPanel, BorderLayout.SOUTH);
