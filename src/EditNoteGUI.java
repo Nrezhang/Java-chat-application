@@ -1,5 +1,4 @@
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -16,14 +15,9 @@ public class EditNoteGUI extends JFrame {
     public EditNoteGUI(String directoryPath) {
         folderName = directoryPath;
         setTitle("Notes App / " + folderName);
-<<<<<<< Updated upstream
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
         directoryManager = new DirectoryManager();
-=======
         setIconImage(new ImageIcon("notes-logo.png").getImage());
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
->>>>>>> Stashed changes
 
         JMenuBar menuBar = new JMenuBar();
         JMenu fileMenu = new JMenu("File");
@@ -38,22 +32,19 @@ public class EditNoteGUI extends JFrame {
         menuBar.add(fileMenu);
         setJMenuBar(menuBar);
 
-<<<<<<< Updated upstream
         addItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 createNewFile();
             }
         });
-=======
+
         exitItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 dispose();
             }
         });
-
->>>>>>> Stashed changes
 
         String[] columns = {folderName};
         String[][] data = {{"Note 1"}, {"Note 2"}, {"Note 3"}};

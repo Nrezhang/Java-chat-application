@@ -54,7 +54,6 @@ public class DirectoryManager {
 
     public File makeNewFile(String folderName, String fileName) {
         path = "app-data/" + folderName + "/" + fileName;
-<<<<<<< Updated upstream
         File newFile = new File(path);
         try {
             if (newFile.createNewFile()) {
@@ -68,10 +67,6 @@ public class DirectoryManager {
         }
 
         return newFile;
-        
-=======
-        return new File(path);
->>>>>>> Stashed changes
     }
 
     public boolean deleteDirectory(String name) {
@@ -85,7 +80,6 @@ public class DirectoryManager {
         return directory.delete();
     }
 
-    //TODO
     public String getFileContent(String filename) {
         StringBuilder content = new StringBuilder();
         try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
@@ -99,7 +93,6 @@ public class DirectoryManager {
         return content.toString();
     }
 
-    //TODO
     public boolean setFileContent(String filename, String content) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
             writer.write(content);
