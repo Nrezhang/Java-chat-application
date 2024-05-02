@@ -20,8 +20,8 @@ public class EditNoteGUI extends JFrame {
         folderName = directoryPath;
         setTitle("Notes App / " + folderName);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
         directoryManager = new DirectoryManager();
+        setIconImage(new ImageIcon("notes-logo.png").getImage());
 
         JMenuBar menuBar = new JMenuBar();
         JMenu fileMenu = new JMenu("File");

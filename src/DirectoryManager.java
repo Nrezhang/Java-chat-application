@@ -1,4 +1,5 @@
 import java.io.*;
+import java.util.Objects;
 
 /**
  * Class responsible for all directory/file management tasks that
@@ -10,7 +11,6 @@ public class DirectoryManager {
 
     public DirectoryManager() {}
 
-    //This path notation works on windows but not sure if it works on macos/linux
     public File[] returnDirectories() {
         path = "app-data";
         File directory = new File(path);
@@ -36,9 +36,19 @@ public class DirectoryManager {
         return (files != null) ? files : new File[0];
     }
 
-    public File makeDirectory(String name) {
-        path = "app-data" + name;
-        return new File(path);
+    public String makeDirectory(String name) {
+        path = "app-data/" + name;
+        File newDirectory = new File(path);
+        if (!newDirectory.exists()) {
+            boolean created = newDirectory.mkdir();
+            if (created) {
+                return "Folder created successfully.";
+            } else {
+                return "Failed to create folder.";
+            }
+        } else {
+            return "Folder already exists.";
+        }
     }
 
     public File makeNewFile(String folderName, String fileName) {
@@ -55,10 +65,19 @@ public class DirectoryManager {
             e.printStackTrace();
         }
         return newFile;
-        
     }
 
-    //TODO
+    public boolean deleteDirectory(String name) {
+        path = "app-data/" + name;
+        File directory = new File(path);
+        if (directory.listFiles() != null) {
+            for (File f : Objects.requireNonNull(directory.listFiles())) {
+                f.delete();
+            }
+        }
+        return directory.delete();
+    }
+
     public String getFileContent(String filename) {
         StringBuilder content = new StringBuilder();
         try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
@@ -72,7 +91,6 @@ public class DirectoryManager {
         return content.toString();
     }
 
-    //TODO
     public boolean setFileContent(String filename, String content) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
             writer.write(content);
