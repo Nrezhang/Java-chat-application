@@ -1,4 +1,6 @@
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -8,17 +10,18 @@ public class MainGUI extends JFrame {
 
     private JPanel mainPanel;
     private JPanel btnPanel;
+    private JPanel searchPanel;
     private JButton newFolderBtn;
     private JButton backBtn;
+    private JButton renameBtn;
     private JButton selectBtn;
     private JButton deleteBtn;
     private JButton submitBtn;
     private ImageIcon imageIcon;
     private JLabel subtitle;
     private JTextField nameField;
-    // Component to display existing folders
+    private JTextField searchField;
     private JList<String> directoryList;
-    // Component to map list to Files
     private DefaultListModel<String> listModel;
 
     public MainGUI () {
@@ -32,7 +35,9 @@ public class MainGUI extends JFrame {
         selectBtn = new JButton("Select Folder");
         deleteBtn = new JButton("Delete Folder");
         submitBtn = new JButton("Create Folder");
+        renameBtn = new JButton("Rename Folder");
         nameField = new JTextField();
+        searchField = new JTextField();
         imageIcon = new ImageIcon("notes-logo.png");
         subtitle = new JLabel("", SwingConstants.CENTER);
         subtitle.setFont(new Font("Sans Serif", Font.BOLD, 20));
@@ -41,6 +46,7 @@ public class MainGUI extends JFrame {
 
         mainPanel = new JPanel();
         btnPanel = new JPanel(new FlowLayout());
+        searchPanel = new JPanel(new FlowLayout());
         mainPanel.setLayout(new BorderLayout());
         add(mainPanel);
         this.openFolder();
@@ -62,8 +68,13 @@ public class MainGUI extends JFrame {
         selectBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String selectedDirectory = directoryList.getSelectedValue();
-                EditNoteGUI editNoteGUI = new EditNoteGUI(selectedDirectory);
+                if (directoryList.isSelectionEmpty()) {
+                    JOptionPane.showMessageDialog(mainPanel, "Please select a folder.",
+                            "Notice", JOptionPane.WARNING_MESSAGE);
+                } else {
+                    String selectedDirectory = directoryList.getSelectedValue();
+                    EditNoteGUI editNoteGUI = new EditNoteGUI(selectedDirectory);
+                }
             }
         });
 
@@ -80,17 +91,40 @@ public class MainGUI extends JFrame {
             }
         });
 
+        renameBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (directoryList.isSelectionEmpty()) {
+                    JOptionPane.showMessageDialog(mainPanel, "Please select a folder.",
+                            "Notice", JOptionPane.WARNING_MESSAGE);
+                } else {
+                    String newName = JOptionPane.showInputDialog("New Name:");
+                    String selectedDirectory = directoryList.getSelectedValue();
+                    DirectoryManager directoryManager = new DirectoryManager();
+                    if (directoryManager.renameDirectory(selectedDirectory, newName)) {
+                        listModel.set(directoryList.getSelectedIndex(), newName);
+                    } else {
+                        JOptionPane.showMessageDialog(mainPanel, "Folder rename failed.",
+                                "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            }
+        });
+
         submitBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 DirectoryManager directoryManager = new DirectoryManager();
                 String directoryName = nameField.getText();
                 if (directoryName.isEmpty()) {
-                    JOptionPane.showMessageDialog(submitBtn, "Folder name cannot be empty.");
-                } else if (!directoryName.matches("[a-zA-Z0-9]+")) {
-                    JOptionPane.showMessageDialog(submitBtn, "Folder name must be alphanumeric.");
+                    JOptionPane.showMessageDialog(submitBtn, "Folder name cannot be empty.",
+                            "Error", JOptionPane.ERROR_MESSAGE);
+                } else if (!directoryName.matches("[a-zA-Z0-9_ ]+")) {
+                    JOptionPane.showMessageDialog(submitBtn, "Folder name must be alphanumeric.",
+                            "Error", JOptionPane.ERROR_MESSAGE);
                 } else if (directoryName.length() > 255) {
-                    JOptionPane.showMessageDialog(submitBtn, "Folder name cannot exceed 255 characters.");
+                    JOptionPane.showMessageDialog(submitBtn, "Folder name cannot exceed 255 characters.",
+                            "Error", JOptionPane.ERROR_MESSAGE);
                 } else {
                     System.out.println(directoryManager.makeDirectory(directoryName));
                     openFolder();
@@ -107,7 +141,7 @@ public class MainGUI extends JFrame {
     private void openFolder() {
         mainPanel.removeAll();
         btnPanel.removeAll();
-        subtitle.setText("Open folders");
+        subtitle.setText("Note folders");
 
         listModel = new DefaultListModel<>();
         directoryList = new JList<>(listModel);
@@ -120,23 +154,60 @@ public class MainGUI extends JFrame {
             String folderName = directory.getName().replace("app-data/", "");
             listModel.addElement(folderName);
         }
+        searchField.setColumns(30);
+
+        searchField.getDocument().addDocumentListener(new DocumentListener() {
+            public void insertUpdate(DocumentEvent e) { filter(); }
+            public void removeUpdate(DocumentEvent e) { filter(); }
+            public void changedUpdate(DocumentEvent e) { filter(); }
+
+            void filter() {
+                String filter = searchField.getText();
+                if (filter.isEmpty()) {
+                    updateList(directories);
+                } else {
+                    updateList(directories, filter);
+                }
+            }
+
+            void updateList(File[] directories, String filter) {
+                directories = directoryManager.returnDirectories();
+                listModel.clear();
+                for (File directory : directories) {
+                    String folderName = directory.getName().replace("app-data/", "");
+                    if (folderName.toLowerCase().contains(filter.toLowerCase())) {
+                        listModel.addElement(folderName);
+                    }
+                }
+            }
+
+            void updateList(File[] directories) {
+                directories = directoryManager.returnDirectories();
+                listModel.clear();
+                for (File directory : directories) {
+                    String folderName = directory.getName().replace("app-data/", "");
+                    listModel.addElement(folderName);
+                }
+            }
+        });
+
+        searchPanel.add(new JLabel("Search"));
+        searchPanel.add(searchField);
+
+        JPanel topPanel = new JPanel(new GridLayout(2, 1));
+        topPanel.add(subtitle);
+        topPanel.add(searchPanel);
 
         btnPanel.add(deleteBtn);
         btnPanel.add(newFolderBtn);
+        btnPanel.add(renameBtn);
         btnPanel.add(selectBtn);
+        mainPanel.add(topPanel, BorderLayout.NORTH);
         mainPanel.add(new JScrollPane(directoryList), BorderLayout.CENTER);
         mainPanel.add(btnPanel, BorderLayout.SOUTH);
 
         mainPanel.revalidate();
         mainPanel.repaint();
-    }
-
-    /**
-     * Renames a folder to the name that has been typed in place of the
-     * existing folder name in the JTable
-     */
-    private void renameFolder() {
-        //TODO
     }
 
     /**

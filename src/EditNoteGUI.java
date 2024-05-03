@@ -4,7 +4,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.FileNotFoundException;
 
 /**
  * Class creates GUI to provide an interface for the user to create, edit, and save files in a given subdirectory
@@ -27,6 +26,7 @@ public class EditNoteGUI extends JFrame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         directoryManager = new DirectoryManager();
         setIconImage(new ImageIcon("notes-logo.png").getImage());
+        setLocationRelativeTo(null);
 
         JMenuBar menuBar = new JMenuBar();
         JMenu fileMenu = new JMenu("File");
@@ -36,17 +36,16 @@ public class EditNoteGUI extends JFrame {
         JMenuItem deleteItem = new JMenuItem("Delete");
         JMenuItem renameItem = new JMenuItem("Rename");
 
+        fileMenu.add(addItem);
         fileMenu.add(saveItem);
+        fileMenu.add(renameItem);
         fileMenu.addSeparator();
         fileMenu.add(deleteItem);
         fileMenu.addSeparator();
-        fileMenu.add(addItem);
-        fileMenu.addSeparator();
         fileMenu.add(exitItem);
-        fileMenu.addSeparator();
-        fileMenu.add(renameItem);
         menuBar.add(fileMenu);
         setJMenuBar(menuBar);
+
 
         addItem.addActionListener(new ActionListener() {
             @Override

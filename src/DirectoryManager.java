@@ -116,9 +116,9 @@ public class DirectoryManager {
     }
 
 
-    public boolean renameDirectory(String parentFolder, String oldName, String newName) {
-        String oldPath = "app-data/" + parentFolder + "/" + oldName;
-        String newPath = "app-data/" + parentFolder + "/" + newName;
+    public boolean renameDirectory(String oldName, String newName) {
+        String oldPath = "app-data/" + oldName;
+        String newPath = "app-data/" + newName;
         File oldDirectory = new File(oldPath);
         File newDirectory = new File(newPath);
         if (oldDirectory.exists() && !newDirectory.exists()) {
