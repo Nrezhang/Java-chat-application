@@ -1,5 +1,8 @@
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,6 +18,7 @@ public class EditNoteGUI extends JFrame {
     private String fileName;
     private File[] files;
     private JTextArea textArea;
+    private JTextField searchField;
     private JTable table;
     private DefaultTableModel tableModel;
     private DirectoryManager directoryManager;
@@ -112,6 +116,14 @@ public class EditNoteGUI extends JFrame {
         table = new JTable(tableModel);
         JScrollPane tableScrollPane = new JScrollPane(table);
 
+        searchField = new JTextField(25);
+        JPanel lhsPanel = new JPanel(new BorderLayout());
+        JPanel searchPanel = new JPanel(new FlowLayout());
+        searchPanel.add(new JLabel("Search"));
+        searchPanel.add(searchField);
+
+        lhsPanel.add(searchPanel, BorderLayout.NORTH);
+        lhsPanel.add(tableScrollPane, BorderLayout.CENTER);
 
 
         textArea = new JTextArea();
@@ -125,13 +137,57 @@ public class EditNoteGUI extends JFrame {
             }
         });
 
+        table.setGridColor(new Color(83, 83, 82));
+
+        JTableHeader header = table.getTableHeader();
+        header.setOpaque(false);
+        header.setBackground(new Color(83, 83, 82));
+        header.setForeground(new Color(210, 188, 72));
+
         
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, tableScrollPane, textAreaScrollPane);
-        splitPane.setDividerLocation(150);
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, lhsPanel, textAreaScrollPane);
+        splitPane.setDividerLocation(300);
         add(splitPane);
 
         setSize(800, 600);
         setVisible(true);
+
+
+        File[] files = directoryManager.returnDirectoryContents(folderName);
+        searchField.getDocument().addDocumentListener(new DocumentListener() {
+            public void insertUpdate(DocumentEvent e) { filter(); }
+            public void removeUpdate(DocumentEvent e) { filter(); }
+            public void changedUpdate(DocumentEvent e) { filter(); }
+
+            void filter() {
+                String filter = searchField.getText();
+                if (filter.isEmpty()) {
+                    updateList(files);
+                } else {
+                    updateList(files, filter);
+                }
+            }
+
+            void updateList(File[] files, String filter) {
+                files = directoryManager.returnDirectoryContents(folderName);
+                tableModel.setRowCount(0);
+                for (File file : files) {
+                    String fileName = file.getName().replace("app-data/" + folderName + "/", "");
+                    if (fileName.toLowerCase().contains(filter.toLowerCase())) {
+                        tableModel.addRow(new Object[]{fileName});
+                    }
+                }
+            }
+
+            void updateList(File[] files) {
+                files = directoryManager.returnDirectoryContents(folderName);
+                tableModel.setRowCount(0);
+                for (File file : files) {
+                    String fileName = file.getName().replace("app-data/" + folderName + "/", "");
+                    tableModel.addRow(new Object[]{fileName});
+                }
+            }
+        });
     }
 
     private void displayFileContent(String fileName) {

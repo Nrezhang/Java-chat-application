@@ -84,9 +84,13 @@ public class MainGUI extends JFrame {
                 int selectedIndex = directoryList.getSelectedIndex();
                 if (selectedIndex != - 1) {
                     String selectedDirectory = directoryList.getSelectedValue();
-                    listModel.remove(selectedIndex);
-                    DirectoryManager directoryManager = new DirectoryManager();
-                    directoryManager.deleteDirectory(selectedDirectory);
+                    int option = JOptionPane.showConfirmDialog(mainPanel, "Delete folder \"" + selectedDirectory
+                            + "\"?", "Delete", JOptionPane.YES_NO_OPTION);
+                    if (option == JOptionPane.YES_OPTION) {
+                        listModel.remove(selectedIndex);
+                        DirectoryManager directoryManager = new DirectoryManager();
+                        directoryManager.deleteDirectory(selectedDirectory);
+                    }
                 }
             }
         });
@@ -141,6 +145,7 @@ public class MainGUI extends JFrame {
     private void openFolder() {
         mainPanel.removeAll();
         btnPanel.removeAll();
+        searchPanel.removeAll();
         subtitle.setText("Note folders");
 
         listModel = new DefaultListModel<>();
