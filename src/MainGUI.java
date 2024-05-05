@@ -6,6 +6,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
+/**
+ * Provides Main graphical user interface which the user can use to
+ * browse and search through folder directories
+ */
 public class MainGUI extends JFrame {
 
     private JPanel mainPanel;
@@ -23,6 +27,7 @@ public class MainGUI extends JFrame {
     private JTextField searchField;
     private JList<String> directoryList;
     private DefaultListModel<String> listModel;
+    private FolderManager folderManager;
 
     public MainGUI () {
         this.setSize(500, 500);
@@ -38,6 +43,7 @@ public class MainGUI extends JFrame {
         renameBtn = new JButton("Rename Folder");
         nameField = new JTextField();
         searchField = new JTextField();
+        folderManager = new FolderManager();
         imageIcon = new ImageIcon("notes-logo.png");
         subtitle = new JLabel("", SwingConstants.CENTER);
         subtitle.setFont(new Font("Sans Serif", Font.BOLD, 20));
@@ -88,8 +94,7 @@ public class MainGUI extends JFrame {
                             + "\"?", "Delete", JOptionPane.YES_NO_OPTION);
                     if (option == JOptionPane.YES_OPTION) {
                         listModel.remove(selectedIndex);
-                        DirectoryManager directoryManager = new DirectoryManager();
-                        directoryManager.deleteDirectory(selectedDirectory);
+                        folderManager.delete(selectedDirectory);
                     }
                 }
             }
@@ -104,8 +109,7 @@ public class MainGUI extends JFrame {
                 } else {
                     String newName = JOptionPane.showInputDialog("New Name:");
                     String selectedDirectory = directoryList.getSelectedValue();
-                    DirectoryManager directoryManager = new DirectoryManager();
-                    if (directoryManager.renameDirectory(selectedDirectory, newName)) {
+                    if (folderManager.rename(selectedDirectory, newName)) {
                         listModel.set(directoryList.getSelectedIndex(), newName);
                     } else {
                         JOptionPane.showMessageDialog(mainPanel, "Folder rename failed.",
@@ -118,7 +122,6 @@ public class MainGUI extends JFrame {
         submitBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                DirectoryManager directoryManager = new DirectoryManager();
                 String directoryName = nameField.getText();
                 if (directoryName.isEmpty()) {
                     JOptionPane.showMessageDialog(submitBtn, "Folder name cannot be empty.",
@@ -130,7 +133,7 @@ public class MainGUI extends JFrame {
                     JOptionPane.showMessageDialog(submitBtn, "Folder name cannot exceed 255 characters.",
                             "Error", JOptionPane.ERROR_MESSAGE);
                 } else {
-                    System.out.println(directoryManager.makeDirectory(directoryName));
+                    System.out.println(folderManager.makeNew(directoryName));
                     openFolder();
                 }
             }
@@ -152,8 +155,7 @@ public class MainGUI extends JFrame {
         directoryList = new JList<>(listModel);
         directoryList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-        DirectoryManager directoryManager = new DirectoryManager();
-        File[] directories = directoryManager.returnDirectories();
+        File[] directories = folderManager.getAll();
 
         for (File directory : directories) {
             String folderName = directory.getName().replace("app-data/", "");
@@ -176,7 +178,7 @@ public class MainGUI extends JFrame {
             }
 
             void updateList(File[] directories, String filter) {
-                directories = directoryManager.returnDirectories();
+                directories = folderManager.getAll();
                 listModel.clear();
                 for (File directory : directories) {
                     String folderName = directory.getName().replace("app-data/", "");
@@ -187,7 +189,7 @@ public class MainGUI extends JFrame {
             }
 
             void updateList(File[] directories) {
-                directories = directoryManager.returnDirectories();
+                directories = folderManager.getAll();
                 listModel.clear();
                 for (File directory : directories) {
                     String folderName = directory.getName().replace("app-data/", "");
