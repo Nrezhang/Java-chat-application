@@ -10,7 +10,9 @@ public class DirectoryManager {
 
     private String path;
 
-    public DirectoryManager() {}
+    public DirectoryManager() {
+
+    }
 
     public File[] returnDirectories() {
         path = "app-data";
