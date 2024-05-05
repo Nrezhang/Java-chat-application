@@ -79,7 +79,7 @@ public class MainGUI extends JFrame {
                             "Notice", JOptionPane.WARNING_MESSAGE);
                 } else {
                     String selectedDirectory = directoryList.getSelectedValue();
-                    EditNoteGUI editNoteGUI = new EditNoteGUI(selectedDirectory);
+                    newEditGUI(selectedDirectory);
                 }
             }
         });
@@ -138,6 +138,10 @@ public class MainGUI extends JFrame {
                 }
             }
         });
+    }
+
+    private void newEditGUI(String selectedDirectory) {
+        EditNoteGUI editNoteGUI = new EditNoteGUI(selectedDirectory);
     }
 
 

@@ -4,6 +4,7 @@ import java.util.Objects;
 /**
  * Class responsible for all directory/file management tasks that
  * interact with the file system.
+ * @deprecated
  */
 public class DirectoryManager {
 
