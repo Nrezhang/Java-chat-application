@@ -115,7 +115,7 @@ public class EditNoteGUI extends JFrame {
         table = new JTable(tableModel);
         JScrollPane tableScrollPane = new JScrollPane(table);
 
-        searchField = new JTextField(20);
+        searchField = new JTextField(15);
         JPanel lhsPanel = new JPanel(new BorderLayout());
         JPanel searchPanel = new JPanel(new FlowLayout());
         searchPanel.add(new JLabel("Search"));

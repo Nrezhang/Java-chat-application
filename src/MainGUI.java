@@ -30,7 +30,7 @@ public class MainGUI extends JFrame {
     private FolderManager folderManager;
 
     public MainGUI () {
-        this.setSize(500, 500);
+        this.setSize(700, 500);
         this.setTitle("Notes");
         this.setLayout(new BorderLayout());
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
