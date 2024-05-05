@@ -1,18 +1,18 @@
-import java.io.*;
+import java.io.File;
+import java.io.FileFilter;
 import java.util.Objects;
 
 /**
- * Class responsible for all directory/file management tasks that
- * interact with the file system.
+ * Handles all interactions with subdirectories of the app-data
+ * directory
  */
-public class FolderManager {
-
-    private String path;
+public class FolderManager implements FileSystemManager {
 
     public FolderManager() {}
 
-    public File[] returnDirectories() {
-        path = "app-data";
+    @Override
+    public File[] getAll() {
+        String path = "app-data";
         File directory = new File(path);
 
         File[] directories = directory.listFiles(new FileFilter() {
@@ -24,24 +24,25 @@ public class FolderManager {
         return (directories != null) ? directories : new File[0];
     }
 
-
-    public String makeDirectory(String name) {
-        path = "app-data/" + name;
+    @Override
+    public File makeNew(String name) {
+        String path = "app-data/" + name;
         File newDirectory = new File(path);
         if (!newDirectory.exists()) {
             boolean created = newDirectory.mkdir();
             if (created) {
-                return "Folder created successfully.";
+                return newDirectory;
             } else {
-                return "Failed to create folder.";
+                return null;
             }
         } else {
-            return "Folder already exists.";
+            return null;
         }
     }
 
-    public boolean deleteDirectory(String name) {
-        path = "app-data/" + name;
+    @Override
+    public boolean delete(String name) {
+        String path = "app-data/" + name;
         File directory = new File(path);
         if (directory.listFiles() != null) {
             for (File f : Objects.requireNonNull(directory.listFiles())) {
@@ -50,7 +51,9 @@ public class FolderManager {
         }
         return directory.delete();
     }
-    public boolean renameDirectory(String oldName, String newName) {
+
+    @Override
+    public boolean rename(String oldName, String newName) {
         String oldPath = "app-data/" + oldName;
         String newPath = "app-data/" + newName;
         File oldDirectory = new File(oldPath);
@@ -60,5 +63,4 @@ public class FolderManager {
         }
         return false;
     }
-
 }

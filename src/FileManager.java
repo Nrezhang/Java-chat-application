@@ -1,18 +1,20 @@
 import java.io.*;
-import java.util.Objects;
 
 /**
- * Class responsible for all directory/file management tasks that
- * interact with the file system.
+ * Handles all interactions with files in a given subdirectory of
+ * the app-data directory
  */
-public class FileManager {
+public class FileManager implements FileSystemManager{
 
-    private String path;
+    private String folderName;
 
-    public FileManager() {}
+    public FileManager(String folderName) {
+        this.folderName = folderName;
+    }
 
-    public File[] returnDirectoryContents(String folderName) {
-        path = "app-data/" + folderName;
+    @Override
+    public File[] getAll() {
+        String path = "app-data/" + folderName;
         File directory = new File(path);
         File[] files = directory.listFiles(new FileFilter() {
             @Override
@@ -23,8 +25,9 @@ public class FileManager {
         return (files != null) ? files : new File[0];
     }
 
-    public File makeNewFile(String folderName, String fileName) {
-        path = "app-data/" + folderName + "/" + fileName;
+    @Override
+    public File makeNew(String name) {
+        String path = "app-data/" + folderName + "/" + name;
         File newFile = new File(path);
         try {
             if (newFile.createNewFile()) {
@@ -39,8 +42,9 @@ public class FileManager {
         return newFile;
     }
 
-    public boolean deleteFile(String folderName, String fileName) {
-        String filePath = "app-data/" + folderName + "/" + fileName;
+    @Override
+    public boolean delete(String name) {
+        String filePath = "app-data/" + folderName + "/" + name;
         File fileToDelete = new File(filePath);
         try{
             fileToDelete.delete();
@@ -50,6 +54,18 @@ public class FileManager {
             e.printStackTrace();
             return false;
         }
+    }
+
+    @Override
+    public boolean rename(String oldName, String newName) {
+        String oldPath = "app-data/" + folderName + "/" + oldName;
+        String newPath = "app-data/" + folderName + "/" + newName;
+        File oldFile = new File(oldPath);
+        File newFile = new File(newPath);
+        if (oldFile.exists() && !newFile.exists()) {
+            return oldFile.renameTo(newFile);
+        }
+        return false;
     }
 
     public String getFileContent(String filename) {
@@ -73,16 +89,5 @@ public class FileManager {
             e.printStackTrace();
             return false;
         }
-    }
-    
-    public boolean renameFile(String folderName, String oldName, String newName) {
-        String oldPath = "app-data/" + folderName + "/" + oldName;
-        String newPath = "app-data/" + folderName + "/" + newName;
-        File oldFile = new File(oldPath);
-        File newFile = new File(newPath);
-        if (oldFile.exists() && !newFile.exists()) {
-            return oldFile.renameTo(newFile);
-        }
-        return false;
     }
 }
