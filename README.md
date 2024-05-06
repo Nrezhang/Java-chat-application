@@ -4,4 +4,6 @@ Users will be able to browse, search, create, delete, and editing notes, which w
 
 developed using Object-oriented principles.
 
+(UML Diagrams)[NotesUML.drawio.pdf]
+
 Developed by: Alec Sirkin and Henry Zhang
